@@ -1,11 +1,9 @@
 package com.victor.library.api.resource;
 
 import com.victor.library.api.dto.BookDTO;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import com.victor.library.model.entity.Book;
+import com.victor.library.service.BookService;
+import org.springframework.web.bind.annotation.*;
 
 import static org.springframework.http.HttpStatus.CREATED;
 
@@ -13,16 +11,28 @@ import static org.springframework.http.HttpStatus.CREATED;
 @RequestMapping("/api/books")
 public class BookController {
 
+    private BookService service;
+
+    public BookController(BookService service) {
+        this.service = service;
+    }
+
     @PostMapping
     @ResponseStatus(CREATED)
-    public BookDTO create() {
-        BookDTO dto = BookDTO.builder()
-                .id(1L)
-                .author("Victor")
-                .title("Meu livro")
-                .isbn("123321")
+    public BookDTO create(@RequestBody BookDTO dto) {
+        Book entity = Book.builder()
+                .author(dto.getAuthor())
+                .title(dto.getTitle())
+                .isbn(dto.getIsbn())
                 .build();
 
-        return dto;
+        entity = service.save(entity);
+
+        return BookDTO.builder()
+                .id(entity.getId())
+                .author(entity.getAuthor())
+                .title(entity.getTitle())
+                .isbn(entity.getIsbn())
+                .build();
     }
 }
