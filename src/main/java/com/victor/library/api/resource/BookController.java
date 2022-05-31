@@ -4,6 +4,7 @@ import com.victor.library.api.dto.BookDTO;
 import com.victor.library.model.entity.Book;
 import com.victor.library.service.BookService;
 import org.springframework.web.bind.annotation.*;
+import org.modelmapper.ModelMapper;
 
 import static org.springframework.http.HttpStatus.CREATED;
 
@@ -12,27 +13,20 @@ import static org.springframework.http.HttpStatus.CREATED;
 public class BookController {
 
     private BookService service;
+    private ModelMapper modelMapper;
 
-    public BookController(BookService service) {
+    public BookController(BookService service, ModelMapper modelMapper) {
         this.service = service;
+        this.modelMapper = modelMapper;
     }
 
     @PostMapping
     @ResponseStatus(CREATED)
     public BookDTO create(@RequestBody BookDTO dto) {
-        Book entity = Book.builder()
-                .author(dto.getAuthor())
-                .title(dto.getTitle())
-                .isbn(dto.getIsbn())
-                .build();
+        Book entity = modelMapper.map(dto, Book.class);
 
         entity = service.save(entity);
 
-        return BookDTO.builder()
-                .id(entity.getId())
-                .author(entity.getAuthor())
-                .title(entity.getTitle())
-                .isbn(entity.getIsbn())
-                .build();
+        return modelMapper.map(entity, BookDTO.class);
     }
 }
