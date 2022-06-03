@@ -89,7 +89,7 @@ public class BookControllerTest {
 
     @Test
     @DisplayName("Should throw an error if has another book with same Isbn")
-    public void createBookWithDuplicatedIsbn() throws Exception {
+    public void createBookWithDuplicatedISBNTest() throws Exception {
 
         BookDTO dto = createBook();
         String json = new ObjectMapper().writeValueAsString(dto);

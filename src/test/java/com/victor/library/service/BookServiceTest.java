@@ -56,7 +56,7 @@ public class BookServiceTest {
 
     @Test
     @DisplayName("Should throw business error if try to save duplicated Isbn")
-    public void shouldNotSaveABookWithDuplicatedISBN(){
+    public void shouldNotSaveABookWithDuplicatedISBNTest(){
 
         // cenário
         Book book = createValidBook();
