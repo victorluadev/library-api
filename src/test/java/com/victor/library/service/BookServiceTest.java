@@ -1,8 +1,10 @@
 package com.victor.library.service;
 
+import com.victor.library.exception.BusinessException;
 import com.victor.library.model.entity.Book;
 import com.victor.library.model.repository.BookRepository;
 import com.victor.library.service.impl.BookServiceImpl;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -39,12 +41,8 @@ public class BookServiceTest {
                 .title("Aventuras de Maria")
                 .build();
 
-        Mockito.when(repository.save(book)).thenReturn(Book.builder()
-                .id(10L)
-                .isbn("1234")
-                .author("Maria")
-                .title("Aventuras de Maria")
-                .build());
+        Mockito.when(repository.existsByIsbn(Mockito.anyString())).thenReturn(false);
+        Mockito.when(repository.save(book)).thenReturn(createValidBook());
 
         // execução
         Book savedBook = service.save(book);
@@ -54,5 +52,33 @@ public class BookServiceTest {
         assertThat(savedBook.getIsbn()).isEqualTo("1234");
         assertThat(savedBook.getAuthor()).isEqualTo("Maria");
         assertThat(savedBook.getTitle()).isEqualTo("Aventuras de Maria");
+    }
+
+    @Test
+    @DisplayName("Should throw business error if try to save duplicated Isbn")
+    public void shouldNotSaveABookWithDuplicatedISBN(){
+
+        // cenário
+        Book book = createValidBook();
+        Mockito.when(repository.existsByIsbn(Mockito.anyString())).thenReturn(true);
+
+        // execução
+        Throwable exception = Assertions.catchThrowable(() -> service.save(book));
+
+        // verificações
+        Assertions.assertThat(exception)
+                .isInstanceOf(BusinessException.class)
+                .hasMessage("Cannot save duplicated Isbn");
+
+        Mockito.verify(repository, Mockito.never()).save(book);
+    }
+
+    private Book createValidBook() {
+        return Book.builder()
+                .id(10L)
+                .isbn("1234")
+                .author("Maria")
+                .title("Aventuras de Maria")
+                .build();
     }
 }

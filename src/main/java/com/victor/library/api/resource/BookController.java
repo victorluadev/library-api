@@ -2,6 +2,7 @@ package com.victor.library.api.resource;
 
 import com.victor.library.api.dto.BookDTO;
 import com.victor.library.api.exception.ApiErrors;
+import com.victor.library.exception.BusinessException;
 import com.victor.library.model.entity.Book;
 import com.victor.library.service.BookService;
 import org.springframework.http.HttpStatus;
@@ -40,9 +41,15 @@ public class BookController {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(BAD_REQUEST)
-    public ApiErrors handleValidationExceptions(MethodArgumentNotValidException exception){
-        BindingResult bindingResult = exception.getBindingResult();
+    public ApiErrors handleValidationExceptions(MethodArgumentNotValidException ex){
+        BindingResult bindingResult = ex.getBindingResult();
 
         return new ApiErrors(bindingResult);
+    }
+
+    @ExceptionHandler(BusinessException.class)
+    @ResponseStatus(BAD_REQUEST)
+    public ApiErrors handleBusinessException(BusinessException ex){
+        return new ApiErrors(ex);
     }
 }
