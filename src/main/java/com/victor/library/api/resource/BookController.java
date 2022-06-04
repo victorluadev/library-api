@@ -46,6 +46,15 @@ public class BookController {
                 .orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
     }
 
+    @DeleteMapping("{id}")
+    @ResponseStatus(NO_CONTENT)
+    public void delete(@PathVariable Long id) {
+        Book book = service.getById(id)
+                .orElseThrow(() -> new ResponseStatusException(NOT_FOUND));;
+
+        service.delete(book);
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(BAD_REQUEST)
     public ApiErrors handleValidationExceptions(MethodArgumentNotValidException ex){
