@@ -5,17 +5,14 @@ import com.victor.library.api.exception.ApiErrors;
 import com.victor.library.exception.BusinessException;
 import com.victor.library.model.entity.Book;
 import com.victor.library.service.BookService;
-import org.springframework.http.HttpStatus;
+import org.modelmapper.ModelMapper;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
-import org.modelmapper.ModelMapper;
 
 import javax.validation.Valid;
-import java.util.List;
 
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.*;
 
 @RestController
 @RequestMapping("/api/books")
@@ -37,6 +34,13 @@ public class BookController {
         entity = service.save(entity);
 
         return modelMapper.map(entity, BookDTO.class);
+    }
+
+    @GetMapping("{id}")
+    @ResponseStatus(OK)
+    public BookDTO get(@PathVariable Long id){
+        Book book = service.getById(id).get();
+        return modelMapper.map(book, BookDTO.class);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

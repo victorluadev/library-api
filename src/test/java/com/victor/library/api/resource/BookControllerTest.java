@@ -22,6 +22,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.util.Optional;
+
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -46,7 +48,13 @@ public class BookControllerTest {
         // cenário
         BookDTO book = createBook();
 
-        Book savedBook = createValidBook();
+        Book savedBook = Book
+                .builder()
+                .id(1L)
+                .author("João")
+                .title("Aventuras no SN")
+                .isbn("44221144")
+                .build();
 
         BDDMockito.given(service.save(Mockito.any(Book.class))).willReturn(savedBook);
         String json = new ObjectMapper().writeValueAsString(book);
@@ -108,19 +116,39 @@ public class BookControllerTest {
                 .andExpect(jsonPath("errors[0]").value("Cannot save duplicated Isbn"));
     }
 
+    @Test
+    @DisplayName("Should return book details")
+    public void getBookDetailsTest() throws Exception{
+
+        // cenário
+        Long id = 1l;
+
+        Book book = Book.builder()
+                .id(id)
+                .title(createBook().getTitle())
+                .author(createBook().getAuthor())
+                .isbn(createBook().getIsbn())
+                .build();
+
+        BDDMockito.given(service.getById(id)).willReturn(Optional.of(book));
+
+        // execução
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .get(BOOK_API.concat("/" + id))
+                .accept(MediaType.APPLICATION_JSON);
+
+        // execução
+        mvc.perform(request)
+                .andExpect(status().isOk())
+                .andExpect( jsonPath("id").value(id))
+                .andExpect( jsonPath("title").value(createBook().getTitle()))
+                .andExpect( jsonPath("author").value(createBook().getAuthor()))
+                .andExpect( jsonPath("isbn").value(createBook().getIsbn()));
+    }
+
     private BookDTO createBook() {
         return BookDTO
                 .builder()
-                .author("João")
-                .title("Aventuras no SN")
-                .isbn("44221144")
-                .build();
-    }
-
-    private Book createValidBook() {
-        return Book
-                .builder()
-                .id(1L)
                 .author("João")
                 .title("Aventuras no SN")
                 .isbn("44221144")
