@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
@@ -106,6 +107,34 @@ public class BookServiceTest {
 
         // verificações
         assertThat( foundBook.isPresent() ).isFalse();
+    }
+
+    @Test
+    @DisplayName("Should delete a book by id")
+    public void deleteBookByIdTest() {
+        Book book = createValidBook();
+
+        org.junit.jupiter.api.Assertions.assertDoesNotThrow(() -> service.delete(book));
+
+        Mockito.verify(repository, Mockito.times(1)).delete(book);
+    }
+
+    @Test
+    @DisplayName("Should return illegal argument trying to delete a null book")
+    public void deleteInexistentBookTest() {
+        Book book = Book.builder()
+                .isbn("1234")
+                .author("Maria")
+                .title("Aventuras de Maria")
+                .build();
+
+        Throwable exception = Assertions.catchThrowable(() -> service.delete(book));
+
+        Assertions.assertThat(exception)
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Book id cannot be null");
+
+        Mockito.verify(repository, Mockito.never()).delete(book);
     }
 
     private Book createValidBook() {

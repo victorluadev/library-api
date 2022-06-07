@@ -33,11 +33,17 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public void delete(Book book) {
-
+        if(book.getId() == null || book == null) {
+            throw new IllegalArgumentException("Book id cannot be null");
+        }
+        this.repository.delete(book);
     }
 
     @Override
     public Book update(Book book) {
-        return null;
+        if(book.getId() == null || book == null) {
+            throw new IllegalArgumentException("Book id cannot be null");
+        }
+        return this.repository.save(book);
     }
 }
