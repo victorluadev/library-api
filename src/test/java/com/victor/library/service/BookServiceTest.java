@@ -137,6 +137,42 @@ public class BookServiceTest {
         Mockito.verify(repository, Mockito.never()).delete(book);
     }
 
+    @Test
+    @DisplayName("Should update a book")
+    public void updateBookTest() {
+        // cenário
+        Long id = 1l;
+        Book updatingBook = Book.builder().id(1l).build();
+
+        Book updatedBook = createValidBook();
+        updatedBook.setId(id);
+
+        Mockito.when(repository.save(updatingBook)).thenReturn(updatedBook);
+
+        // execução
+        Book book = service.update(updatingBook);
+
+        // verificações
+        assertThat(book.getId()).isEqualTo(updatedBook.getId());
+        assertThat(book.getTitle()).isEqualTo(updatedBook.getTitle());
+        assertThat(book.getAuthor()).isEqualTo(updatedBook.getAuthor());
+        assertThat(book.getIsbn()).isEqualTo(updatedBook.getIsbn());
+    }
+
+    @Test
+    @DisplayName("Should return illegal argument trying to update a null book")
+    public void updateInexistentBookTest() {
+        Book book = new Book();
+
+        Throwable exception = Assertions.catchThrowable(() -> service.update(book));
+
+        Assertions.assertThat(exception)
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Book id cannot be null");
+
+        Mockito.verify(repository, Mockito.never()).save(book);
+    }
+
     private Book createValidBook() {
         return Book.builder()
                 .id(10L)
