@@ -2,6 +2,7 @@ package com.victor.library.api.resource;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.victor.library.api.dto.LoanDTO;
+import com.victor.library.exception.BusinessException;
 import com.victor.library.model.entity.Book;
 import com.victor.library.model.entity.Loan;
 import com.victor.library.service.BookService;
@@ -84,7 +85,7 @@ public class LoanControllerTest {
     }
 
     @Test
-    @DisplayName("Should throw error id isbn is inexistent")
+    @DisplayName("Should throw error if isbn is inexistent")
     public void invalidIsbnCreateLoanTest() throws Exception {
 
         LoanDTO dto = LoanDTO.builder()
@@ -106,5 +107,36 @@ public class LoanControllerTest {
                 .andExpect( status().isBadRequest() )
                 .andExpect( jsonPath("errors", Matchers.hasSize(1)))
                 .andExpect( jsonPath("errors[0]").value("Book not found for passed isbn"));
+    }
+
+    @Test
+    @DisplayName("Should throw error if book is loaned")
+    public void loanedBookErrorOnCreateLoanTest() throws Exception {
+
+        LoanDTO dto = LoanDTO.builder()
+                .isbn("123")
+                .customer("Fulano")
+                .build();
+
+        Book book = Book.builder()
+                .id(1l)
+                .isbn("123")
+                .build();
+
+        String json = new ObjectMapper().writeValueAsString(dto);
+
+        BDDMockito.given(bookService.getBookByIsbn("123")).willReturn(Optional.of(book));
+        BDDMockito.given(loanService.save(Mockito.any(Loan.class))).willThrow(new BusinessException("Book already loaned"));
+
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .post(LOAN_API)
+                .accept(APPLICATION_JSON)
+                .contentType(APPLICATION_JSON)
+                .content(json);
+
+        mvc.perform(request)
+                .andExpect( status().isBadRequest() )
+                .andExpect( jsonPath("errors", Matchers.hasSize(1)))
+                .andExpect( jsonPath("errors[0]").value("Book already loaned"));
     }
 }
