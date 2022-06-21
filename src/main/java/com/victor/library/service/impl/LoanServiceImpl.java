@@ -5,6 +5,8 @@ import com.victor.library.model.entity.Loan;
 import com.victor.library.model.repository.LoanRepository;
 import com.victor.library.service.LoanService;
 
+import java.util.Optional;
+
 public class LoanServiceImpl implements LoanService {
 
     private LoanRepository repository;
@@ -19,5 +21,15 @@ public class LoanServiceImpl implements LoanService {
             throw new BusinessException("Book already loaned");
         }
         return repository.save(loan);
+    }
+
+    @Override
+    public Optional<Loan> getById(Long id) {
+        return Optional.empty();
+    }
+
+    @Override
+    public void update(Loan loan) {
+
     }
 }

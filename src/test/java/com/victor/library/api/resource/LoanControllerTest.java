@@ -2,6 +2,7 @@ package com.victor.library.api.resource;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.victor.library.api.dto.LoanDTO;
+import com.victor.library.api.dto.ReturnedLoanDTO;
 import com.victor.library.exception.BusinessException;
 import com.victor.library.model.entity.Book;
 import com.victor.library.model.entity.Loan;
@@ -29,6 +30,7 @@ import java.util.Optional;
 import java.util.Properties;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(SpringExtension.class)
@@ -138,5 +140,26 @@ public class LoanControllerTest {
                 .andExpect( status().isBadRequest() )
                 .andExpect( jsonPath("errors", Matchers.hasSize(1)))
                 .andExpect( jsonPath("errors[0]").value("Book already loaned"));
+    }
+
+    @Test
+    @DisplayName("Should return a book")
+    public void returnBookTest() throws Exception{
+        // cenário ( returned: true )
+        ReturnedLoanDTO dto = ReturnedLoanDTO.builder().returned(true).build();
+        Loan loan = Loan.builder().id(1l).build();
+        BDDMockito.given(loanService.getById(Mockito.anyLong()))
+                .willReturn(Optional.of(loan));
+
+        String json = new ObjectMapper().writeValueAsString(dto);
+
+        mvc.perform(
+                patch(LOAN_API.concat("/1"))
+                .accept(APPLICATION_JSON)
+                .contentType(APPLICATION_JSON)
+                .content(json)
+        ).andExpect(status().isOk());
+
+        Mockito.verify(loanService, Mockito.times(1)).update(loan);
     }
 }
