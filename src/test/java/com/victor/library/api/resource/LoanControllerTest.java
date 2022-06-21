@@ -87,7 +87,7 @@ public class LoanControllerTest {
     }
 
     @Test
-    @DisplayName("Should throw error if isbn is inexistent")
+    @DisplayName("Should throw error if isbn is nonexistent")
     public void invalidIsbnCreateLoanTest() throws Exception {
 
         LoanDTO dto = LoanDTO.builder()

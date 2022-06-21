@@ -244,7 +244,7 @@ public class BookControllerTest {
 
     @Test
     @DisplayName("Should return a resource not found when doesnt found a book")
-    public void updateInexistentBookTest() throws Exception {
+    public void updateNonexistentBookTest() throws Exception {
 
         // cenário
         String json = new ObjectMapper().writeValueAsString(createBook());

@@ -106,7 +106,7 @@ public class BookServiceTest {
 
     @Test
     @DisplayName("Should return empty when look for a book by id who doesnt exists")
-    public void getInexistentBookByIdTest() {
+    public void getNonexistentBookByIdTest() {
         Long id = 1l;
         Mockito.when(repository.findById(id)).thenReturn(Optional.empty());
 
@@ -129,7 +129,7 @@ public class BookServiceTest {
 
     @Test
     @DisplayName("Should return illegal argument trying to delete a null book")
-    public void deleteInexistentBookTest() {
+    public void deleteNonexistentBookTest() {
         Book book = Book.builder()
                 .isbn("1234")
                 .author("Maria")
@@ -169,7 +169,7 @@ public class BookServiceTest {
 
     @Test
     @DisplayName("Should return illegal argument trying to update a null book")
-    public void updateInexistentBookTest() {
+    public void updateNonexistentBookTest() {
         Book book = new Book();
 
         Throwable exception = Assertions.catchThrowable(() -> service.update(book));
