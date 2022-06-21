@@ -15,6 +15,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
@@ -65,6 +66,7 @@ public class LoanServiceTest {
     @Test
     @DisplayName("Should throw a business exception if book has already loaned")
     public void loanedBookSaveTest(){
+
         Book book = Book.builder().id(1l).build();
         Loan saving = Loan.builder()
                 .book(book)
@@ -81,5 +83,37 @@ public class LoanServiceTest {
             .hasMessage("Book already loaned");
 
         verify(repository, never()).save(saving);
+    }
+
+    @Test
+    @DisplayName("Should obtain information of a loan by id")
+    public void getLoanDetailsTest() {
+        Long id = 1l;
+
+        Loan loan = createLoan();
+        loan.setId(id);
+
+        Mockito.when(repository.findById(id)).thenReturn(Optional.of(loan));
+
+        // execução
+        Optional<Loan> result = service.getById(id);
+
+        // verificações
+        assertThat(result.isPresent()).isTrue();
+        assertThat(result.get().getId()).isEqualTo(id);
+        assertThat(result.get().getCustomer()).isEqualTo(loan.getCustomer());
+        assertThat(result.get().getBook()).isEqualTo(loan.getBook());
+        assertThat(result.get().getLoanDate()).isEqualTo(loan.getLoanDate());
+
+        verify(repository).findById(id);
+    }
+
+    public Loan createLoan(){
+        Book book = Book.builder().id(1l).build();
+        return Loan.builder()
+                .book(book)
+                .customer("Fulano")
+                .loanDate(LocalDate.now())
+                .build();
     }
 }
