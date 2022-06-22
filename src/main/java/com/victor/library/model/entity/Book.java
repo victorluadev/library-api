@@ -7,6 +7,9 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
+import java.util.List;
+
+import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.IDENTITY;
 
 @Data
@@ -30,4 +33,7 @@ public class Book {
 
     @Column(name = "ds_isbn")
     private String isbn;
+
+    @OneToMany(mappedBy = "book", fetch = LAZY)
+    private List<Loan> loans;
 }

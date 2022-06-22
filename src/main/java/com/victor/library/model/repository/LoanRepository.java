@@ -3,7 +3,6 @@ package com.victor.library.model.repository;
 import com.victor.library.model.entity.Book;
 import com.victor.library.model.entity.Loan;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -22,4 +21,6 @@ public interface LoanRepository extends JpaRepository<Loan, Long> {
             @Param("customer") String customer,
             Pageable pageable
     );
+
+    Page<Loan> findByBook(Book book, Pageable pageable);
 }

@@ -2,6 +2,7 @@ package com.victor.library.service.impl;
 
 import com.victor.library.api.dto.LoanFilterDTO;
 import com.victor.library.exception.BusinessException;
+import com.victor.library.model.entity.Book;
 import com.victor.library.model.entity.Loan;
 import com.victor.library.model.repository.LoanRepository;
 import com.victor.library.service.LoanService;
@@ -39,5 +40,10 @@ public class LoanServiceImpl implements LoanService {
     @Override
     public Page<Loan> find(LoanFilterDTO filter, Pageable pageable) {
         return repository.findByBookIsbnOrCustomer(filter.getIsbn(), filter.getCustomer(), pageable);
+    }
+
+    @Override
+    public Page<Loan> getLoansByBook(Book book, Pageable pageable) {
+        return repository.findByBook(book, pageable);
     }
 }
