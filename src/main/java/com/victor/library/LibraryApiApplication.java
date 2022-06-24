@@ -16,11 +16,6 @@ public class LibraryApiApplication {
 		return new ModelMapper();
 	}
 
-	@Scheduled(cron = "0 0 22 1/1 * ?")
-	public void schedulingTasks() {
-		System.out.println("AGENDAMENTO DE TAREFAS");
-	}
-
 	public static void main(String[] args) {
 		SpringApplication.run(LibraryApiApplication.class, args);
 	}
