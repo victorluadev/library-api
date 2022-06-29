@@ -24,7 +24,7 @@ public class ScheduleService {
     @Scheduled(cron = CRON_LATE_LOANS)
     public void sendMailToLateLoans() {
         List<Loan> allLateLoans = loanService.getAllLateLoans();
-        List<Object> mailsList = allLateLoans.stream()
+        List<String> mailsList = allLateLoans.stream()
                 .map(loan -> loan.getCustomerEmail())
                 .collect(Collectors.toList());
 
